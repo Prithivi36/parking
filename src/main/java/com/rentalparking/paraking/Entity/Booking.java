@@ -18,8 +18,9 @@ public class Booking {
     @Id
     private String _id;
     private String spaceId;
-    private String uerId;
+    private String userId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String totalCost;
+    private boolean status;
 }
