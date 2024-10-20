@@ -48,7 +48,7 @@ public class ParkingServiceImpl implements ParkingService {
         Query query = new Query();
         query.addCriteria(
                 Criteria.where("location")
-                        .near(new GeoJsonPoint(longitude,latitude))
+                        .near(new GeoJsonPoint(latitude,longitude))
                         .maxDistance(radius)
         );
         return mongoTemplate.find(query, Parking.class);
