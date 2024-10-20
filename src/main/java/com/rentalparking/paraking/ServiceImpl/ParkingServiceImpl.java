@@ -55,6 +55,13 @@ public class ParkingServiceImpl implements ParkingService {
     }
 
     @Override
+    public List<Parking> findMine(String id) {
+        return parkingRepository.findByUserId(id).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"Not found")
+        );
+    }
+
+    @Override
     public List<Parking> findByVehicleAndPrice(String vehicleType, double maxPrice) {
         Query query = new Query();
         query.addCriteria(

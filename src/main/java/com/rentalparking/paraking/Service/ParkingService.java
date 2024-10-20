@@ -12,5 +12,6 @@ public interface ParkingService {
     String toggleAvailability(String id,boolean avail);
     String deleteParking(String id);
     List<Parking> findNearBy(double latitude, double longitude, double radius);
+    List<Parking> findMine(String id);
     List<Parking> findByVehicleAndPrice(String vehicleType,double maxPrice);
 }

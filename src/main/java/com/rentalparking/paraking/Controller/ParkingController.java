@@ -34,4 +34,8 @@ public class ParkingController {
     public List<Parking> getParkingLocation(@PathVariable double lt ,@PathVariable double ld ,@PathVariable int rad){
         return parkingService.findNearBy(lt,ld,rad);
     }
+    @GetMapping("/my/{uid}")
+    public List<Parking> myParking(@PathVariable String uid){
+        return parkingService.findMine(uid);
+    }
 }
