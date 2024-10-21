@@ -9,4 +9,6 @@ import java.util.List;
 public interface UserService {
     User getUser(String id);
     String saveUser(User user);
+    String getByUserMail(String email);
+
 }

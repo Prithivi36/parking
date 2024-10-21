@@ -38,4 +38,8 @@ public class BookingController {
     public String acceptOrReject(@PathVariable String id){
         return bookingService.acceptOrReject(id);
     }
+    @GetMapping("/my/{s}")
+    public List<Booking> getByOwner(@PathVariable String s ){
+        return bookingService.getByOwenr(s);
+    }
 }

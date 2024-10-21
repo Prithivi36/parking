@@ -13,4 +13,5 @@ public interface BookingService {
     List<Booking> listUserBooking(String id);
     List<Booking> placeBooking(String id);
     String acceptOrReject(String id);
+    List<Booking> getByOwenr(String id);
 }

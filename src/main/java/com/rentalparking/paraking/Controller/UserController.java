@@ -23,4 +23,9 @@ public class UserController {
         return userService.saveUser(user);
     }
 
+    @GetMapping("/mail/{email}")
+    public String findByEmail(@PathVariable String email){
+        return userService.getByUserMail(email);
+    }
+
 }
