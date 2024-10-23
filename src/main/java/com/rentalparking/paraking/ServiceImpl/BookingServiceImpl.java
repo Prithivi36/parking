@@ -2,9 +2,11 @@ package com.rentalparking.paraking.ServiceImpl;
 
 import com.rentalparking.paraking.Entity.Booking;
 import com.rentalparking.paraking.Entity.Parking;
+import com.rentalparking.paraking.Entity.User;
 import com.rentalparking.paraking.Exception.ApiException;
 import com.rentalparking.paraking.Repository.BookingRepository;
 import com.rentalparking.paraking.Repository.ParkingRepository;
+import com.rentalparking.paraking.Repository.UserRepository;
 import com.rentalparking.paraking.Service.BookingService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,12 +21,19 @@ import java.util.List;
 public class BookingServiceImpl implements BookingService {
     BookingRepository bookingRepository;
     ParkingRepository parkingRepository;
+    UserRepository userRepository;
     @Override
     public String createBooking(Booking booking) {
         String parkId= booking.getSpaceId();
+        booking.setStatus("processing");
         Parking parking = parkingRepository.findById(parkId).orElseThrow(()->
                 new ApiException(HttpStatus.NOT_FOUND,"Not found")
         );
+        booking.setAddress(parking.getAddress());
+        User usr = userRepository.findById(booking.getUserId()).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found")
+        );
+        booking.setUserName(usr.getName());
         Duration duration = Duration.between(booking.getStartTime(),booking.getEndTime());
         double hour=duration.toHours()*parking.getPricePerHour();
         booking.setTotalCost(hour+"");
@@ -54,12 +63,21 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public String acceptOrReject(String id) {
+    public String accept(String id) {
         Booking booking = viewBooking(id);
-        boolean sts=booking.isStatus();
-        booking.setStatus(!sts);
+        String sts=booking.getStatus();
+        booking.setStatus("accepted");
         bookingRepository.save(booking);
-        return !sts?"Accepted":"Rejected";
+        return "Accepted";
+    }
+
+    @Override
+    public String reject(String id) {
+        Booking booking = viewBooking(id);
+        String sts=booking.getStatus();
+        booking.setStatus("rejected");
+        bookingRepository.save(booking);
+        return "Rejected";
     }
 
     @Override

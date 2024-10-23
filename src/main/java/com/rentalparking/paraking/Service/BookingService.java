@@ -12,6 +12,7 @@ public interface BookingService {
     String cancelBooking(String id);
     List<Booking> listUserBooking(String id);
     List<Booking> placeBooking(String id);
-    String acceptOrReject(String id);
+    String accept(String id);
+    String reject(String id);
     List<Booking> getByOwenr(String id);
 }

@@ -19,9 +19,11 @@ public class Booking {
     private String _id;
     private String spaceId;
     private String userId;
+    private String userName;
+    private String address;
     private String owner;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String totalCost;
-    private boolean status;
+    private String status;
 }

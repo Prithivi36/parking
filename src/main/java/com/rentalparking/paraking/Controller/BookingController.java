@@ -35,8 +35,11 @@ public class BookingController {
         return bookingService.placeBooking(pid);
     }
     @PatchMapping("/{id}")
-    public String acceptOrReject(@PathVariable String id){
-        return bookingService.acceptOrReject(id);
+    public String accept(@PathVariable String id){
+        return bookingService.accept(id);
+    }@PatchMapping("/r/{id}")
+    public String reject(@PathVariable String id){
+        return bookingService.reject(id);
     }
     @GetMapping("/my/{s}")
     public List<Booking> getByOwner(@PathVariable String s ){
