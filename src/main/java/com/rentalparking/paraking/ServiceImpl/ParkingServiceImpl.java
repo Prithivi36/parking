@@ -1,8 +1,10 @@
 package com.rentalparking.paraking.ServiceImpl;
 
 import com.rentalparking.paraking.Entity.Parking;
+import com.rentalparking.paraking.Entity.User;
 import com.rentalparking.paraking.Exception.ApiException;
 import com.rentalparking.paraking.Repository.ParkingRepository;
+import com.rentalparking.paraking.Repository.UserRepository;
 import com.rentalparking.paraking.Service.ParkingService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -19,8 +21,11 @@ import java.util.List;
 public class ParkingServiceImpl implements ParkingService {
     ParkingRepository parkingRepository;
     MongoTemplate mongoTemplate;
+    UserRepository userRepository;
     @Override
     public String addParking(Parking parking) {
+        User usr = userRepository.findById(parking.getUserId()).orElseThrow(()->
+                new ApiException(HttpStatus.NOT_FOUND,"User Does Not exist"));
         return parkingRepository.save(parking).getAddress()+" Saved Successfully";
     }
 
