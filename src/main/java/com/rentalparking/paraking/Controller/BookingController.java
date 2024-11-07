@@ -43,6 +43,6 @@ public class BookingController {
     }
     @GetMapping("/my/{s}")
     public List<Booking> getByOwner(@PathVariable String s ){
-        return bookingService.getByOwenr(s);
+        return bookingService.getByOwner(s);
     }
 }
