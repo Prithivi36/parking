@@ -1,6 +1,7 @@
 package com.rentalparking.parking.ServiceImpl;
 
 import com.rentalparking.parking.Entity.Booking;
+import com.rentalparking.parking.Entity.Notification;
 import com.rentalparking.parking.Entity.Parking;
 import com.rentalparking.parking.Entity.User;
 import com.rentalparking.parking.Exception.ApiException;
@@ -32,6 +33,10 @@ public class BookingServiceImpl implements BookingService {
         User usr = userRepository.findById(booking.getUserId()).orElseThrow(
                 ()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found")
         );
+        User usrOwn = userRepository.findById(parking.getUserId()).orElseThrow(
+                ()-> new ApiException(HttpStatus.NOT_FOUND,"User Not found")
+        );
+        booking.setOwnerName(usrOwn.getName());
         booking.setUserName(usr.getName());
         Duration duration = Duration.between(booking.getStartTime(),booking.getEndTime());
         double hour=duration.toHours()*parking.getPricePerHour();
@@ -47,6 +52,26 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public String cancelBooking(String id) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"No booking found")
+        );
+        User user = userRepository.findById(booking.getOwner()).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"User ID Not Found")
+        );
+        User userBooked = userRepository.findById(booking.getUserId()).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"User ID Not Found")
+        );
+        List<Notification> msg =user.getInbox();
+        Notification cancel = new Notification();
+        cancel.setViewed(false);
+        cancel.setMessage("Your booking from user "+booking.getUserName()+" cancelled the booking");
+        msg.addFirst(cancel);
+        user.setInbox(msg);
+        userRepository.save(user);
+        cancel.setMessage("Successfully cancelled booking with "+booking.getOwnerName());
+        msg=userBooked.getInbox();
+        msg.addFirst(cancel);
+        userRepository.save(userBooked);
         bookingRepository.deleteById(id);
         return "Cancelled";
     }

@@ -1,8 +1,6 @@
 package com.rentalparking.parking.ServiceImpl;
 
-import com.rentalparking.parking.Entity.Storage;
-import com.rentalparking.parking.Entity.StorageBooking;
-import com.rentalparking.parking.Entity.User;
+import com.rentalparking.parking.Entity.*;
 import com.rentalparking.parking.Exception.ApiException;
 import com.rentalparking.parking.Repository.StorageBookingRepository;
 import com.rentalparking.parking.Repository.StorageRepository;
@@ -32,6 +30,10 @@ public class StorageBookingServiceImpl implements StorageBookingService {
         User usr = ur.findById(booking.getUserId()).orElseThrow(
                 ()->new ApiException(HttpStatus.NOT_FOUND,"user is Invalid")
         );
+        User usrOwn = ur.findById(storage.getUserId()).orElseThrow(
+                ()-> new ApiException(HttpStatus.NOT_FOUND,"User Id Not found")
+        );
+        booking.setOwnerName(usrOwn.getName());
         booking.setUserName(usr.getName());
 
         Duration duration = Duration.between(booking.getStartTime(),booking.getEndTime());
@@ -48,6 +50,26 @@ public class StorageBookingServiceImpl implements StorageBookingService {
 
     @Override
     public String cancelBooking(String id) {
+        StorageBooking booking = sbr.findById(id).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"No booking found")
+        );
+        User user = ur.findById(booking.getOwner()).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found")
+        );
+        User userBooked = ur.findById(booking.getUserId()).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found")
+        );
+        List<Notification> msg =user.getInbox();
+        Notification cancel = new Notification();
+        cancel.setViewed(false);
+        cancel.setMessage("Your booking from user "+booking.getUserName()+" cancelled the booking");
+        msg.addFirst(cancel);
+        ur.save(user);
+        cancel.setMessage("Successfully cancelled booking with "+booking.getOwnerName());
+        msg=userBooked.getInbox();
+        msg.addFirst(cancel);
+        user.setInbox(msg);
+        ur.save(userBooked);
         sbr.deleteById(id);
         return "cancelled";
     }

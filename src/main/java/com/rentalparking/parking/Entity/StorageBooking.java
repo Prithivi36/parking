@@ -22,6 +22,7 @@ public class StorageBooking {
     private String userName;
     private String address;
     private String owner;
+    private String ownerName;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String totalCost;

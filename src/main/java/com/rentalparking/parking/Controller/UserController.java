@@ -27,4 +27,9 @@ public class UserController {
         return userService.getByUserMail(email);
     }
 
+    @PatchMapping("/{id}")
+    public String viewed(@PathVariable String id){
+        return userService.viewMessage(id);
+    }
+
 }

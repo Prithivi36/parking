@@ -9,17 +9,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document("User")
-@Getter
-@Setter
+@Document("notify")
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
+@Getter
+@Setter
+public class Notification {
     @Id
     private String _id;
-    private String name;
-    private String email;
-    private String phone;
-    private List<Notification> inbox;
-
+    private String message;
+    private boolean viewed;
 }
