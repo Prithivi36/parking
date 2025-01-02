@@ -19,6 +19,15 @@ public class StorageBookingServiceImpl implements StorageBookingService {
     StorageBookingRepository sbr;
     StorageRepository sr;
     UserRepository ur;
+    public void sendMessage(String message,User user){
+        List<Notification> msg =user.getInbox();
+        Notification info = new Notification();
+        info.setViewed(false);
+        info.setMessage(message);
+        msg.addFirst(info);
+        user.setInbox(msg);
+        ur.save(user);
+    }
     @Override
     public String createBooking(StorageBooking booking) {
         String storeId = booking.getSpaceId();
@@ -33,6 +42,7 @@ public class StorageBookingServiceImpl implements StorageBookingService {
         User usrOwn = ur.findById(storage.getUserId()).orElseThrow(
                 ()-> new ApiException(HttpStatus.NOT_FOUND,"User Id Not found")
         );
+        sendMessage("You have a new Booking from "+usr.getName(),usrOwn);
         booking.setOwnerName(usrOwn.getName());
         booking.setUserName(usr.getName());
 
@@ -59,17 +69,8 @@ public class StorageBookingServiceImpl implements StorageBookingService {
         User userBooked = ur.findById(booking.getUserId()).orElseThrow(
                 ()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found")
         );
-        List<Notification> msg =user.getInbox();
-        Notification cancel = new Notification();
-        cancel.setViewed(false);
-        cancel.setMessage("Your booking from user "+booking.getUserName()+" cancelled the booking");
-        msg.addFirst(cancel);
-        ur.save(user);
-        cancel.setMessage("Successfully cancelled booking with "+booking.getOwnerName());
-        msg=userBooked.getInbox();
-        msg.addFirst(cancel);
-        user.setInbox(msg);
-        ur.save(userBooked);
+        sendMessage("Your booking from user "+booking.getUserName()+" cancelled the booking",user);
+        sendMessage("Successfully cancelled booking with "+booking.getOwnerName(),userBooked);
         sbr.deleteById(id);
         return "cancelled";
     }
@@ -89,6 +90,9 @@ public class StorageBookingServiceImpl implements StorageBookingService {
         StorageBooking booking = viewBooking(id);
         booking.setStatus("accepted");
         sbr.save(booking);
+        User user = ur.findById(booking.getUserId()).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,
+                "User Not Found"));
+        sendMessage("Your Booking Request Has Been Accepted",user);
         return "Accepted";
     }
 

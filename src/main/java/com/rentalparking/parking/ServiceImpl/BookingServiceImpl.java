@@ -22,6 +22,15 @@ public class BookingServiceImpl implements BookingService {
     BookingRepository bookingRepository;
     ParkingRepository parkingRepository;
     UserRepository userRepository;
+    public void sendMessage(String message,User user){
+        List<Notification> msg =user.getInbox();
+        Notification info = new Notification();
+        info.setViewed(false);
+        info.setMessage(message);
+        msg.addFirst(info);
+        user.setInbox(msg);
+        userRepository.save(user);
+    }
     @Override
     public String createBooking(Booking booking) {
         String parkId= booking.getSpaceId();
@@ -36,6 +45,7 @@ public class BookingServiceImpl implements BookingService {
         User usrOwn = userRepository.findById(parking.getUserId()).orElseThrow(
                 ()-> new ApiException(HttpStatus.NOT_FOUND,"User Not found")
         );
+        sendMessage("You have a new Booking from "+usr.getName(),usrOwn);
         booking.setOwnerName(usrOwn.getName());
         booking.setUserName(usr.getName());
         Duration duration = Duration.between(booking.getStartTime(),booking.getEndTime());
@@ -61,17 +71,8 @@ public class BookingServiceImpl implements BookingService {
         User userBooked = userRepository.findById(booking.getUserId()).orElseThrow(
                 ()->new ApiException(HttpStatus.NOT_FOUND,"User ID Not Found")
         );
-        List<Notification> msg =user.getInbox();
-        Notification cancel = new Notification();
-        cancel.setViewed(false);
-        cancel.setMessage("Your booking from user "+booking.getUserName()+" cancelled the booking");
-        msg.addFirst(cancel);
-        user.setInbox(msg);
-        userRepository.save(user);
-        cancel.setMessage("Successfully cancelled booking with "+booking.getOwnerName());
-        msg=userBooked.getInbox();
-        msg.addFirst(cancel);
-        userRepository.save(userBooked);
+        sendMessage("Your booking from user "+booking.getUserName()+" cancelled the booking",user);
+        sendMessage("Successfully cancelled booking with "+booking.getOwnerName(),userBooked);
         bookingRepository.deleteById(id);
         return "Cancelled";
     }
@@ -92,6 +93,9 @@ public class BookingServiceImpl implements BookingService {
         String sts=booking.getStatus();
         booking.setStatus("accepted");
         bookingRepository.save(booking);
+        User user = userRepository.findById(booking.getUserId()).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,
+                "User Not Found"));
+        sendMessage("Your Booking Request Has Been Accepted",user);
         return "Accepted";
     }
 
