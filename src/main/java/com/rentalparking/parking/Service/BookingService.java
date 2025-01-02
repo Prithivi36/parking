@@ -3,6 +3,7 @@ package com.rentalparking.parking.Service;
 import com.rentalparking.parking.Entity.Booking;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Book;
 import java.util.List;
 
 @Service
@@ -16,4 +17,5 @@ public interface BookingService {
     String reject(String id);
     List<Booking> getByOwner(String id);
     String completed(String id);
+    List<Booking> requestsPending(String id);
 }

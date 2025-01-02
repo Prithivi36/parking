@@ -43,6 +43,14 @@ public class StorageBookingController {
     }
     @GetMapping("/my/{s}")
     public List<StorageBooking> getByOwner(@PathVariable String s ){
-        return storageBookingService.getByOwenr(s);
+        return storageBookingService.getByOwner(s);
+    }
+    @GetMapping("/my/p/{s}")
+    public List<StorageBooking> getByOwnerPending(@PathVariable String s ){
+        return storageBookingService.requestsPending(s);
+    }
+    @PatchMapping("/c/{id}")
+    public String completed(@PathVariable String id){
+        return storageBookingService.completed(id);
     }
 }

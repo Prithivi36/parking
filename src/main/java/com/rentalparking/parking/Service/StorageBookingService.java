@@ -1,5 +1,6 @@
 package com.rentalparking.parking.Service;
 
+import com.rentalparking.parking.Entity.Booking;
 import com.rentalparking.parking.Entity.StorageBooking;
 import org.springframework.stereotype.Service;
 
@@ -14,5 +15,7 @@ public interface StorageBookingService {
     List<StorageBooking> placeBooking(String id);
     String accept(String id);
     String reject(String id);
-    List<StorageBooking> getByOwenr(String id);
+    List<StorageBooking> getByOwner(String id);
+    String completed(String id);
+    List<StorageBooking> requestsPending(String id);
 }

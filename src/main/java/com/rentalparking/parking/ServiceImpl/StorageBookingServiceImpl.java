@@ -80,6 +80,8 @@ public class StorageBookingServiceImpl implements StorageBookingService {
         return sbr.findByUserId(id);
     }
 
+
+
     @Override
     public List<StorageBooking> placeBooking(String id) {
         return List.of();
@@ -88,6 +90,8 @@ public class StorageBookingServiceImpl implements StorageBookingService {
     @Override
     public String accept(String id) {
         StorageBooking booking = viewBooking(id);
+        String sts = booking.getStatus();
+        if(!sts.equals("processing")) return "Already "+sts;
         booking.setStatus("accepted");
         sbr.save(booking);
         User user = ur.findById(booking.getUserId()).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,
@@ -99,13 +103,46 @@ public class StorageBookingServiceImpl implements StorageBookingService {
     @Override
     public String reject(String id) {
         StorageBooking booking = viewBooking(id);
+        String sts = booking.getStatus();
+        if(!sts.equals("processing")) return "Already "+sts;
         booking.setStatus("rejected");
         sbr.save(booking);
+        User user = ur.findById(booking.getUserId()).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,
+                "User Not Found"));
+        sendMessage("Your Booking Request Has Been Rejected",user);
         return "Rejected";
     }
 
     @Override
-    public List<StorageBooking> getByOwenr(String id) {
+    public List<StorageBooking> getByOwner(String id) {
         return sbr.findByOwner(id);
+    }
+    @Override
+    public List<StorageBooking> requestsPending(String id) {
+        return getByOwner(id).stream().filter((p)->p.getStatus().equals("processing")).toList();
+    }
+
+    @Override
+    public String completed(String id) {
+        StorageBooking booking = sbr.findById(id).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"Booking not found")
+        );
+        Storage store = sr.findById(booking.getSpaceId()).orElseThrow(
+                ()-> new ApiException(HttpStatus.NOT_FOUND,"Parking not Found")
+        );
+        User user = ur.findById(booking.getUserId()).orElseThrow(()->new ApiException(
+                HttpStatus.NOT_FOUND,"User Not Found"
+        ));User userOwn = ur.findById(booking.getOwner()).orElseThrow(()->new ApiException(
+                HttpStatus.NOT_FOUND,"User Not Found"
+        ));
+        sendMessage("You have Successfully Completed Your Journey with "+booking.getOwnerName(),user);
+        sendMessage("You have Successfully Completed Your Journey with "+booking.getUserName(),userOwn);
+        double cost = (store.getTotalRevenue()==null)?0:store.getTotalRevenue();
+        cost+= Double.parseDouble(booking.getTotalCost());
+        store.setTotalRevenue(cost);
+        sr.save(store);
+        booking.setStatus("completed");
+        sbr.save(booking);
+        return "Successfully completed.";
     }
 }

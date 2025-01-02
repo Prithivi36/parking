@@ -24,6 +24,7 @@ public class ParkingServiceImpl implements ParkingService {
     UserRepository userRepository;
     @Override
     public String addParking(Parking parking) {
+        parking.setTotalRevenue(0.0);
         User usr = userRepository.findById(parking.getUserId()).orElseThrow(()->
                 new ApiException(HttpStatus.NOT_FOUND,"User Does Not exist"));
         parking.setOwnerName(usr.getName());

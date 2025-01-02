@@ -91,6 +91,7 @@ public class BookingServiceImpl implements BookingService {
     public String accept(String id) {
         Booking booking = viewBooking(id);
         String sts=booking.getStatus();
+        if(!sts.equals("processing")) return "Already "+sts;
         booking.setStatus("accepted");
         bookingRepository.save(booking);
         User user = userRepository.findById(booking.getUserId()).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,
@@ -103,14 +104,22 @@ public class BookingServiceImpl implements BookingService {
     public String reject(String id) {
         Booking booking = viewBooking(id);
         String sts=booking.getStatus();
+        if(!sts.equals("processing")) return "Already "+sts;
         booking.setStatus("rejected");
         bookingRepository.save(booking);
+        User user = userRepository.findById(booking.getUserId()).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,
+                "User Not Found"));
+        sendMessage("Your Booking Request Has Been Rejected",user);
         return "Rejected";
     }
 
     @Override
     public List<Booking> getByOwner(String id) {
         return bookingRepository.findByOwner(id).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found"));
+    }
+    @Override
+    public List<Booking> requestsPending(String id) {
+        return getByOwner(id).stream().filter((p)->p.getStatus().equals("processing")).toList();
     }
 
     @Override
@@ -121,7 +130,14 @@ public class BookingServiceImpl implements BookingService {
         Parking parking = parkingRepository.findById(booking.getSpaceId()).orElseThrow(
                 ()-> new ApiException(HttpStatus.NOT_FOUND,"Parking not Found")
         );
-        Double cost = parking.getTotalRevenue();
+        User user = userRepository.findById(booking.getUserId()).orElseThrow(()->new ApiException(
+                HttpStatus.NOT_FOUND,"User Not Found"
+        ));User userOwn = userRepository.findById(booking.getOwner()).orElseThrow(()->new ApiException(
+                HttpStatus.NOT_FOUND,"User Not Found"
+        ));
+        sendMessage("You have Successfully Completed Your Journey with "+booking.getOwnerName(),user);
+        sendMessage("You have Successfully Completed Your Journey with "+booking.getUserName(),userOwn);
+        double cost = (parking.getTotalRevenue()==null)?0:parking.getTotalRevenue();
         cost+= Double.parseDouble(booking.getTotalCost());
         parking.setTotalRevenue(cost);
         parkingRepository.save(parking);
@@ -129,5 +145,7 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.save(booking);
         return "Successfully completed.";
     }
+
+
 
 }

@@ -25,6 +25,7 @@ public class StorageServiceImpl implements StorageService {
     MongoTemplate mongoTemplate;
     @Override
     public String addStorage(Storage store) {
+        store.setTotalRevenue(0.0);
         User usr = userRepository.findById(store.getUserId()).orElseThrow(
                 ()->  new ApiException(HttpStatus.NOT_FOUND,"Not Found")
         );

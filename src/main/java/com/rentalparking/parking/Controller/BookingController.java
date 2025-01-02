@@ -45,4 +45,13 @@ public class BookingController {
     public List<Booking> getByOwner(@PathVariable String s ){
         return bookingService.getByOwner(s);
     }
+    @GetMapping("/my/p/{s}")
+    public List<Booking> getByOwnerPending(@PathVariable String s ){
+        return bookingService.requestsPending(s);
+    }
+    @PatchMapping("/c/{id}")
+    public String completed(@PathVariable String id){
+        return bookingService.completed(id);
+    }
+
 }
