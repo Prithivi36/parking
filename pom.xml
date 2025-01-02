@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.rentalparking</groupId>
-	<artifactId>paraking</artifactId>
+	<artifactId>parking</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>paraking</name>
+	<name>parking</name>
 	<description>Parking Rental</description>
 	<url/>
 	<licenses>
