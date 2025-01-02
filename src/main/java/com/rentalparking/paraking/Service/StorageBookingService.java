@@ -1,6 +1,7 @@
 package com.rentalparking.paraking.Service;
 
 import com.rentalparking.paraking.Entity.StorageBooking;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

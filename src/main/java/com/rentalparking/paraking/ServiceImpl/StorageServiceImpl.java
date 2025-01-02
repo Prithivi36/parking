@@ -7,14 +7,18 @@ import com.rentalparking.paraking.Exception.ApiException;
 import com.rentalparking.paraking.Repository.StorageRepository;
 import com.rentalparking.paraking.Repository.UserRepository;
 import com.rentalparking.paraking.Service.StorageService;
+import lombok.AllArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.geo.GeoJsonPoint;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
+@AllArgsConstructor
 public class StorageServiceImpl implements StorageService {
     StorageRepository storageRepository;
     UserRepository userRepository;
@@ -25,6 +29,7 @@ public class StorageServiceImpl implements StorageService {
                 ()->  new ApiException(HttpStatus.NOT_FOUND,"Not Found")
         );
         store.setOwnerName(usr.getName());
+        store.setAvailable(true);
         storageRepository.save(store);
         return "Successfully saved";
     }

@@ -1,6 +1,5 @@
 package com.rentalparking.paraking.ServiceImpl;
 
-import com.rentalparking.paraking.Entity.Parking;
 import com.rentalparking.paraking.Entity.Storage;
 import com.rentalparking.paraking.Entity.StorageBooking;
 import com.rentalparking.paraking.Entity.User;
@@ -16,8 +15,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.List;
 
-@AllArgsConstructor
 @Service
+@AllArgsConstructor
 public class StorageBookingServiceImpl implements StorageBookingService {
     StorageBookingRepository sbr;
     StorageRepository sr;

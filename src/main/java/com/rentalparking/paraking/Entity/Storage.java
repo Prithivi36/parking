@@ -19,6 +19,7 @@ public class Storage {
     private String ownerName;
     private GeoJsonPoint location;
     private boolean available;
-    private String size;
+    private double size;
+    private Double totalRevenue;
     private double pricePerHour;
 }
