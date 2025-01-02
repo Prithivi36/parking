@@ -36,7 +36,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setUserName(usr.getName());
         Duration duration = Duration.between(booking.getStartTime(),booking.getEndTime());
         double hour=duration.toHours()*parking.getPricePerHour();
-        booking.setTotalCost(hour+"");
+        booking.setTotalCost(String.format("%.2f", hour));
         booking.setOwner(parking.getUserId());
         return bookingRepository.save(booking).get_id() + " as booking Id placed Successfully";
     }
@@ -84,4 +84,22 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getByOwner(String id) {
         return bookingRepository.findByOwner(id).orElseThrow(()->new ApiException(HttpStatus.NOT_FOUND,"User Not Found"));
     }
+
+    @Override
+    public String completed(String id) {
+        Booking booking = bookingRepository.findById(id).orElseThrow(
+                ()->new ApiException(HttpStatus.NOT_FOUND,"Booking not found")
+        );
+        Parking parking = parkingRepository.findById(booking.getSpaceId()).orElseThrow(
+                ()-> new ApiException(HttpStatus.NOT_FOUND,"Parking not Found")
+        );
+        Double cost = parking.getTotalRevenue();
+        cost+= Double.parseDouble(booking.getTotalCost());
+        parking.setTotalRevenue(cost);
+        parkingRepository.save(parking);
+        booking.setStatus("completed");
+        bookingRepository.save(booking);
+        return "Successfully completed.";
+    }
+
 }

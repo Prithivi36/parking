@@ -15,4 +15,5 @@ public interface BookingService {
     String accept(String id);
     String reject(String id);
     List<Booking> getByOwner(String id);
+    String completed(String id);
 }
